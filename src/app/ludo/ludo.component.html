@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ludo Game</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container">
+    <h2 class="heading">Play Ludo with Friends</h2>
+
+    <img src="assets/ludo.png" alt="Ludo Board" class="ludo-image">
+
+    <div class="button-group">
+      <ion-button color="primary">2 Player</ion-button>
+      <ion-button color="secondary">3 Player</ion-button>
+      <ion-button color="tertiary">4 Player</ion-button>
+    </div>
+
+    <ion-button color="success" class="start-game" (click)="playGame()">Start Game</ion-button>
+  </div>
+</ion-content>
