@@ -493,31 +493,107 @@ export class PlayLudoPage implements OnInit {
   }
 
 
+  // handleDieCollision(CurrentDie: HTMLElement, currentDieColor: string, currentPosition: any) {
+  //   for (let i = 0; i < this.stepsOfAllDie.length; i++) {
+  //     const step = this.stepsOfAllDie[i];
+  //     if (step.die !== CurrentDie && step.color !== currentDieColor && step.position === currentPosition) {
+  //       console.log('Collision occurred between', step.color, 'and', currentDieColor, 'at position', currentPosition);
+
+  //       // Move the collided die back to its starting position  
+  //       const collidedDie = step.die;
+  //       const collidedDieId = collidedDie.getAttribute('id');
+  //       let startingArea: ElementRef | undefined;
+  //       if (collidedDieId && collidedDieId.includes('elementpath')) {
+  //         if (step.color == 'green') {
+  //           collidedDie.id = 'greendie' + i;
+  //           startingArea = this.greenDotArea;
+  //         } else if (step.color == 'red') {
+  //           collidedDie.id = 'reddie' + i;
+  //           startingArea = this.redDotArea;
+  //         } else if (step.color == 'blue') {
+  //           collidedDie.id = 'bluedie' + i;
+  //           startingArea = this.blueDotArea;
+  //         } else if (step.color == 'yellow') {
+  //           collidedDie.id = 'yellowdie' + i;
+  //           startingArea = this.yellowDotArea;
+  //         }
+  //       }
+
+
+  //       if (startingArea) {
+  //         // Append the collided die to its starting area
+  //         this.renderer.appendChild(startingArea.nativeElement, collidedDie);
+  //         console.log(`Collided die of color ${step.color} moved back to starting area with ID "cutted"`);
+  //       } else {
+  //         console.error(`Starting area for color ${step.color} not found`);
+  //       }
+  //       // Remove the collided die from the stepsOfAllDie array
+  //       this.stepsOfAllDie.splice(i, 1);
+  //       i--; // Adjust the index after removing an element
+
+  //     }
+  //   }
+  // }
+
+
   handleDieCollision(CurrentDie: HTMLElement, currentDieColor: string, currentPosition: any) {
     for (let i = 0; i < this.stepsOfAllDie.length; i++) {
       const step = this.stepsOfAllDie[i];
+
       if (step.die !== CurrentDie && step.color !== currentDieColor && step.position === currentPosition) {
         console.log('Collision occurred between', step.color, 'and', currentDieColor, 'at position', currentPosition);
 
-        // Move the collided die back to its starting position  
         const collidedDie = step.die;
         const collidedDieId = collidedDie.getAttribute('id');
-        if (collidedDieId && collidedDieId.includes('elementpath')) {
+        let startingArea: ElementRef | undefined;
 
-          if (step.color == 'green') {
+        if (collidedDieId && collidedDieId.includes('elementpath')) {
+          if (step.color === 'green') {
             collidedDie.id = 'greendie' + i;
-          } else if (step.color == 'red') {
+            startingArea = this.greenDotArea;
+          } else if (step.color === 'red') {
             collidedDie.id = 'reddie' + i;
-          } else if (step.color == 'blue') {
+            startingArea = this.redDotArea;
+          } else if (step.color === 'blue') {
             collidedDie.id = 'bluedie' + i;
-          } else if (step.color == 'yellow') {
+            startingArea = this.blueDotArea;
+          } else if (step.color === 'yellow') {
             collidedDie.id = 'yellowdie' + i;
+            startingArea = this.yellowDotArea;
           }
         }
+
+        if (startingArea) {
+          const corners = startingArea.nativeElement.querySelectorAll('.corner');
+          let appended = false;
+
+          for (let corner of corners) {
+            // Check if corner already has a die (excluding static <span>)
+            const hasDie = Array.from(corner.children).some(child => (child as HTMLElement).tagName !== 'SPAN');
+            if (!hasDie) {
+              this.renderer.appendChild(corner, collidedDie);
+              appended = true;
+              break;
+            }
+          }
+
+          if (!appended) {
+            console.warn('No available corner found, appending to the starting area by default');
+            this.renderer.appendChild(startingArea.nativeElement, collidedDie);
+          }
+
+          console.log(`Collided die of color ${step.color} moved back to starting area`);
+        } else {
+          console.error(`Starting area for color ${step.color} not found`);
+        }
+
+        this.stepsOfAllDie.splice(i, 1);
+        i--;
       }
     }
-
   }
+
+
 }
 
 
